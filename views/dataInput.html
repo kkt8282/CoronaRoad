@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<link rel='stylesheet' href='./style.css' type='text/css'/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=s7o9v0n4tf&submodules=geocoder"></script>
+	<script type="text/javascript" src="js/bignumber.min.js"></script>
+	<script type="text/javascript" src="js/web3-light.js"></script>
+	<script type="text/javascript" src="js/argiculture.js"></script>
+	<script type="text/javascript">
+
+		console.log('starting...');
+		//connect web3 and check if web3 is connected correctly
+		if (typeof web3 !== 'undefined') {
+			web3 = new Web3(web3.currentProvider);
+		} else {
+			// set the provider you want from Web3.providers
+			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+		}
+
+		if (web3.isConnected()) {
+			console.log("connected");
+		} else {
+			console.log("not connected");
+			exit;
+		}
+
+		var contractAddress = "0xaa07ba7b476922a18cae257c773c6a1c6c95a634";
+		var vc = web3.eth.contract(abi).at(contractAddress);
+
+		function showList() {
+			console.log(vc);
+			var table = document.getElementById("table1");
+			var length = vc.getNumOfProducts();
+			console.log(length);
+			for (var i = 0; i < length; i++) {
+				var product = vc.getProductStruct(i);
+				console.log(product);
+				var toString = product.toString();
+				// console.log("product: " + toString);
+				var strArray = toString.split(",");
+				
+				var timestamp = new Date(strArray[6]*1000);
+				console.log("timestamp: " + timestamp);
+				console.log("timestamp: " + strArray[6]*1000);
+
+				var row = table.insertRow();
+				var cell1 = row.insertCell(0);
+				var cell2 = row.insertCell(1);
+				var cell3 = row.insertCell(2);
+				var cell4 = row.insertCell(3);
+				var cell5 = row.insertCell(4);
+				var cell6 = row.insertCell(5);
+				cell1.innerHTML = strArray[1];
+				cell2.innerHTML = strArray[2];
+				cell3.innerHTML = strArray[3];
+				cell4.innerHTML = strArray[4];
+				cell5.innerHTML = strArray[5];
+				cell6.style.width ="60%";
+				cell6.innerHTML = timestamp;
+			}
+		}
+
+		function addProduct() {
+			var age = document.getElementById("age").value;
+			var addr = document.getElementById("address").value;
+			var account = document.getElementById("account").value;
+			var lon, lat;
+			var area;
+			const op = {
+				query : addr
+			}
+			naver.maps.Service.geocode(op, function(status, response) {
+				if (status !== naver.maps.Service.Status.OK) {
+					return alert('Something wrong!');
+				}
+
+				var result = response.v2, // 검색 결과의 컨테이너
+					items = result.addresses; // 검색 결과의 배열
+
+				// do Something
+				area = items[0].roadAddress.substr(0,2);
+        		console.log(area);
+				console.log(result);
+				console.log(items[0].x, items[0].y);
+				lon = items[0].x;
+				lat = items[0].y;
+			});
+			//function addProStru ( string _age, string _addr, string _lati, string _longti, string _purse_addr, string _location)
+			lon = toString(lon);
+			lat = toString(lat);
+			
+			console.log(typeof(addr));
+			if (web3.personal.unlockAccount(account, document.getElementById('pass').value)) {
+				vc.c(age, addr, lat, lon, account, area, { from: account, gas: 2000000 }, function (err, result) {
+					if (!err) alert("트랜잭션이 성공적으로 전송되었습니다.\n" + result) 
+					else	console.log(err);
+				});
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<h1> 코로나 없다 </h1>
+	<div>
+		계정:
+		<input type="text" id="account" value="0x75c191f41525c4ac163aee6a10007ee8c6612e14">
+		<p></p>
+		패스워드:
+		<input type="password" id="pass" value="eth"> </div>
+	<br>
+	<div>
+		<input type="text" id="age" placeholder="나이">
+		<input type="text" id="address" placeholder="방문한곳 주소" value="경상북도 포항시 지곡로 102">
+		<button onClick="addProduct()">방문장소 등록하기</button>
+	</div>
+	<table style="width:100%" id="table1" />
+	<script>
+		showList();
+	</script>
+</body>
+</html>

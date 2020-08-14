@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>corona Road</title>
+    <link rel="stylesheet" type="text/css" href="/css/document-registry.css" />
+    <script src="/js/jquery-3.1.1.min.js"></script>
+
+  
+ 
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=s7o9v0n4tf&submodules=geocoder"></script>
+
+       <!-- 하이차트 -->
+   <script src="https://code.highcharts.com/highcharts.js"></script>
+   <script src="https://code.highcharts.com/modules/series-label.js"></script>
+   <script src="https://code.highcharts.com/modules/exporting.js"></script>
+   <script src="https://code.highcharts.com/modules/export-data.js"></script>
+   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+   <!-- <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+   <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+   <script src="https://code.highcharts.com/mapdata/countries/kr/kr-all.js"></script> -->
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+   <link href="/css/mainStyle.css" rel="stylesheet">
+   <script src="/js/sha256.min.js"></script>
+    <script src="/js/argiculture.js"></script>
+
+</head>
+
+<body>
+    <header id="menu">
+        <a href="#" id="linkHome">Home</a>
+        <a href="#" id="linkSubmitDocument">확진자 등록</a>
+        <a href="#" id="linkVerifyDocument">확진자 위치</a>
+    </header>
+
+    <main>
+        <section id="loadingBox">Loading ...</section>
+
+        <section id="infoBox"><header>x</header><p>Info</p></section>
+
+        <section id="errorBox"><header>x</header><p>Error</p></section>
+
+        <section id="viewHome">
+            <h1>Agriculture DApp with MetaMask</h1>
+            Welcome to the "Agriculture DApp with MetaMask" DApp. This
+            decentralized app runs on the Etherereum blockchain network and
+            holds a registry of items in a Solidity smart contract.
+            <ul>
+                <li>확진자 정보를 확인 할 수 있습니다.</li>
+                <li><b>사용자는</b> 확진자 정보를 등록할 수 있습니다.</li>
+                <li>
+                    Contract <b>address</b> (at Ropsten testnet):
+                    <a href="#" id="contractLink" target="_blank"></a>
+                </li>
+            </ul>
+        </section>
+
+        <section id="viewSubmitDocument">
+            <h1>확진자 등록</h1>
+            <p>확진자를 등록해 주세요. 나이 주소를 입력해 주시면 됩니다.</p>
+            
+                <h1> 코로나 없다 </h1>
+                <!--<div>
+                    계정:
+                    <input type="text" id="account" value="0x75c191f41525c4ac163aee6a10007ee8c6612e14">
+                    <p></p>
+                    패스워드:
+                    <input type="password" id="pass" value="eth"> </div>
+                <br>
+                -->
+                <div>
+                    <input type="text" id="age" placeholder="나이">
+                    <input type="text" id="address" placeholder="방문한곳 주소">
+                    <label>제출:
+                        <input type="button" id="itemUploadButton" value="submit">
+                    </label>
+                    <!--<button onClick="addProduct()">방문장소 등록하기</button>-->
+                </div>
+                
+            
+        </section>
+
+        <section id="viewVerifyDocument">
+            <h1>Verify a Document</h1>
+            <p>Blockchain users can verify documents by checking whether they exist in the "Document Registry" smart contract on the Ethereum blockchain decentralized network.</p>
+            <!-- <input type="file" id="documentToVerify" /><br/> -->
+            <table style="width:100%" id="table1" />
+            <input type="button" id="documentVerifyButton" value="Submit" />
+
+            <!-- 지도 차트 넣기 -->
+            <div class="selectbox">
+                <label for="ex_select">지역선택</label>
+                <select id="ex_select" onchange="selectEvent()">
+                   <option value="0" selected>전체</option>
+                   <option value="1">경기도</option>
+                   <option value="2">충청도</option>
+                   <option value="3">전라도</option>
+                   <option value="4">강원도</option>
+                   <option value="5">경상도</option>
+                   <option value="6">제주도</option>
+                </select>
+             </div>
+             <div id="container" class = "chart_div"></div>
+             <!-- <div id="container2" class = "chart_div set2"></div> -->
+             <div id="map">
+          
+            </div>
+
+        </section>
+    </main>
+    
+    <footer><a href="https://github.com/sotolab/nodeRopstenMetamskDocumentRegistry">Argiculture Registry</a> - Copyright &copy; SotoLAB, Since 2015</footer>
+    
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5frhsUpl04m03MyCFzvaTpTWV3tsayB4&callback=initMap"
+    async defer></script>
+</body>
+<script>
+    var chart_size = 100;
+    var map;
+    var selectValue = 0;
+    var marker;
+    var locationarr=[];
+    var selectLocations = [
+       ['전체', 37.5203636, 127.0431529],
+ 
+       ['경기도', 37.490478, 127.354246],
+ 
+       ['충청도', 36.702282, 127.282113],
+ 
+       ['전라도', 35.346095, 127.084888],
+ 
+       ['강원도', 37.775408, 128.241678],
+       ['경상도', 35.764305, 128.791876],
+       ['제주도', 33.388674, 126.522524]
+    ];
+    $(document).ready(function () {
+       var selectTarget = $('.selectbox select');
+ 
+       selectTarget.on('blur', function () {
+          $(this).parent().removeClass('focus');
+       });
+ 
+       selectTarget.change(function () {
+          var select_name = $(this).children('option:selected').text();
+ 
+          $(this).siblings('label').text(select_name);
+       });
+    });
+ 
+    var locations = [
+ 
+       ['명동', 37.563576, 126.983431],
+ 
+       ['가로수길', 37.520300, 127.023008],
+ 
+       ['광화문', 37.575268, 126.976896],
+ 
+       ['남산', 37.550925, 126.990945],
+ 
+       ['이태원', 37.540223, 126.994005]
+ 
+    ];
+ 
+    function initMap() {
+ 
+ 
+       var uluru2 = { lat: 37.5203636, lng: 127.0431529 };
+       var uluru = { lat: 36.0359245, lng: 129.3710349 };
+ 
+       map = new google.maps.Map(
+          document.getElementById('map'), {
+             zoom: 5, center: new google.maps.LatLng(
+                selectLocations[selectValue][1], selectLocations[selectValue][2]
+             )
+       });
+    //    for (let i = 0; i < locations.length; i++) {
+        var image = "/images/position.png";
+          marker = new google.maps.Marker({
+             position: new google.maps.LatLng(36.010541, 129.321337),
+             map: map,
+             icon: image
+          });
+          attachSecretMessage(marker, "내 위치");
+    //    }
+ 
+    }
+    function selectEvent() {
+       var langSelect = document.getElementById("ex_select");
+       // select element에서 선택된 option의 value가 저장된다.
+       selectValue = langSelect.options[langSelect.selectedIndex].value;
+       if (selectValue != 0) {
+          var zoomLevel = 8;
+       }
+       else {
+          var zoomLevel = 5;
+       }
+       map.zoom = zoomLevel;
+       
+       console.dir(map);
+       map.setCenter({
+          lat: selectLocations[selectValue][1],
+          lng: selectLocations[selectValue][2]
+       });
+       
+    }
+    function attachSecretMessage(marker, secretMessage) {
+       var infowindow = new google.maps.InfoWindow({
+          content: secretMessage
+       });
+ 
+       marker.addListener('click', function () {
+          infowindow.open(marker.get('map'), marker);
+       });
+    }
+ </script>
+ <script src="/js/chart.js"></script>
+ 
+</html>

@@ -1,0 +1,171 @@
+@charset "UTF-8";
+
+
+#map{
+    position: absolute;
+    top: 270px;
+    left: 50px;
+    height: 435px; 
+    width: 800px;
+}
+#browsers2{
+    background-color: white;
+    border: 1px solid purple;
+    border-radius: 10px;
+    display: inline-block;
+    font: inherit;
+    line-height: 1.5em;
+    padding: 0.5em 3.5em 0.5em 1em;
+
+margin: 0;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+-webkit-appearance: none;
+-moz-appearance: none;
+
+
+background-image:
+linear-gradient(45deg, transparent 50%, gray 50%),
+linear-gradient(135deg, gray 50%, transparent 50%),
+radial-gradient(#ddd 70%, transparent 72%);
+background-position:
+calc(100% - 20px) calc(1em + 2px),
+calc(100% - 15px) calc(1em + 2px),
+calc(100% - .5em) .5em;
+background-size:
+5px 5px,
+5px 5px,
+1.5em 1.5em;
+background-repeat: no-repeat;
+}
+
+  .where {
+    display: block;
+    margin: 25px 15px;
+    font-size: 11px;
+    color: #000;
+    text-decoration: none;
+    font-family: verdana;
+    font-style: italic;
+  }
+  
+  .selectbox {
+    position: absolute;
+    left: 50px;
+    top: 200px;
+    width: 200px;
+    border: 1px solid #999;
+    z-index: 1;
+  }
+  
+  .selectbox:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 0;
+    height: 0;
+    margin-top: -1px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #333;
+  }
+  
+  .selectbox label {
+    position: absolute;
+    top: 1px;
+    left: 5px;
+    padding: .8em .5em;
+    color: #999;
+    z-index: -1;
+  }
+  
+  .selectbox select {
+    width: 100%;
+    height: auto;
+    line-height: normal;
+    font-family: inherit;
+    padding: .8em .5em;
+    border: 0;
+    opacity: 0;
+    filter:alpha(opacity=0);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  .map-container-4{
+    overflow:hidden;
+    padding-bottom:56.25%;
+    position:relative;
+    height:0;
+    }
+    .map-container-4 iframe{
+    left:0;
+    top:0;
+    height:100%;
+    width:100%;
+    position:absolute;
+    }
+
+    .highcharts-figure,
+.highcharts-data-table table {
+  min-width: 310px;
+  max-width: 800px;
+  margin: 1em auto;
+}
+
+#container {
+  height: 300px;
+}
+
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #EBEBEB;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+
+.highcharts-data-table th {
+  font-weight: 600;
+  padding: 0.5em;
+}
+
+.highcharts-data-table td,
+.highcharts-data-table th,
+.highcharts-data-table caption {
+  padding: 0.5em;
+}
+
+.highcharts-data-table thead tr,
+.highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+.chart_div{
+    position: absolute;
+    left: 925px;
+    top: 334px;
+    width: 400px;
+    height: 400px;
+}
+.chart_div.set2{
+    top: 100px;
+}
+.loading {
+    margin-top: 10em;
+    text-align: center;
+    color: gray;
+}
